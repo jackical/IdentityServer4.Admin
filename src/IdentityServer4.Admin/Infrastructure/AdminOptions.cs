@@ -96,7 +96,5 @@ namespace IdentityServer4.Admin.Infrastructure
         public HashSet<string> Title => _configuration.GetSection("Title").Get<HashSet<string>>();
 
         public HashSet<string> Level => _configuration.GetSection("Level").Get<HashSet<string>>();
-
-        public HashSet<string> Cors => _configuration.GetSection("Cors").Get<HashSet<string>>();
     }
 }

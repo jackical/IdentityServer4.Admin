@@ -31,7 +31,8 @@ namespace IdentityServer4.Admin
                 .MinimumLevel.Override("System", LogEventLevel.Warning)
                 .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Warning)
                 .Enrich.FromLogContext()
-                .WriteTo.Console().WriteTo.RollingFile(logFile)
+                .WriteTo.Console().WriteTo.RollingFile(logFile,
+                    outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
                 .CreateLogger();
 
             Log.Logger.Information($"Log to: {logFile}");
