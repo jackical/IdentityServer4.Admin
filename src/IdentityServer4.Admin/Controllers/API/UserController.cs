@@ -22,17 +22,20 @@ namespace IdentityServer4.Admin.Controllers.API
         private readonly IDbContext _dbContext;
         private readonly IServiceProvider _serviceProvider;
         private readonly RoleManager<Role> _roleManager;
+        private readonly AdminOptions _options;
 
         public UserController(UserManager<User> userManager,
             RoleManager<Role> roleManager,
             IDbContext dbContext,
             IServiceProvider serviceProvider,
+            AdminOptions options,
             ILoggerFactory loggerFactory) : base(loggerFactory)
         {
             _userManager = userManager;
             _dbContext = dbContext;
             _serviceProvider = serviceProvider;
             _roleManager = roleManager;
+            _options = options;
         }
 
         #region User
@@ -55,10 +58,13 @@ namespace IdentityServer4.Admin.Controllers.API
                 return new ApiResult(ApiResultType.Error, "用户名已经存在");
             }
 
-            // Check email exists
-            if (await _userManager.Users.AnyAsync(u => u.Email == user.Email && u.IsDeleted == false))
+            if (_options.RequireUniqueEmail)
             {
-                return new ApiResult(ApiResultType.Error, "邮箱已经存在");
+                // Check email exists
+                if (await _userManager.Users.AnyAsync(u => u.Email == user.Email && u.IsDeleted == false))
+                {
+                    return new ApiResult(ApiResultType.Error, "邮箱已经存在");
+                }
             }
 
             var result = await _userManager.CreateAsync(user, dto.Password);
@@ -155,6 +161,15 @@ namespace IdentityServer4.Admin.Controllers.API
                 u.Id != userId && u.NormalizedUserName == normalizedName && u.IsDeleted == false))
             {
                 return new ApiResult(ApiResultType.Error, "用户名已经存在");
+            }
+
+            if (_options.RequireUniqueEmail)
+            {
+                if (await _userManager.Users.AnyAsync(u =>
+                    u.Id != userId && u.Email == dto.Email && u.IsDeleted == false))
+                {
+                    return new ApiResult(ApiResultType.Error, "邮件已经存在");
+                }
             }
 
             user.UserName = dto.UserName;
