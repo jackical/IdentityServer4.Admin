@@ -82,7 +82,7 @@ namespace IdentityServer4.Admin.Rpc
                 .Select(u => new
                 {
                     u.Id,
-                    Name = u.FirstName + u.LastName,
+                    Name = string.Concat(u.LastName, u.FirstName),
                     u.Title,
                     u.Email,
                     Mobile = u.PhoneNumber,
@@ -117,7 +117,8 @@ namespace IdentityServer4.Admin.Rpc
             if (!string.IsNullOrWhiteSpace(dto.Q))
             {
                 where = u =>
-                    (u.FirstName + u.LastName).Contains(dto.Q) || u.Email.Contains(dto.Q) ||
+                    (u.FirstName + u.LastName).Contains(dto.Q) ||
+                    (u.LastName + u.FirstName).Contains(dto.Q) || u.Email.Contains(dto.Q) ||
                     u.PhoneNumber.Contains(dto.Q);
             }
 
@@ -156,7 +157,7 @@ namespace IdentityServer4.Admin.Rpc
                     Result = output.Result.Select(u => new
                     {
                         u.Id,
-                        Name = u.FirstName + u.LastName,
+                        Name = String.CompareOrdinal(u.LastName, u.FirstName),
                         u.Title,
                         u.Email,
                         Mobile = u.PhoneNumber,
@@ -178,7 +179,7 @@ namespace IdentityServer4.Admin.Rpc
                             new TmpUser
                             {
                                 Id = u.Id,
-                                Name = u.FirstName + u.LastName,
+                                Name = string.Concat(u.LastName, u.FirstName),
                                 Title = u.Title,
                                 Email = u.Email,
                                 Mobile = u.PhoneNumber,

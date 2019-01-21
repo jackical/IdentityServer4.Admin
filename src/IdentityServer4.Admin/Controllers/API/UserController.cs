@@ -92,6 +92,7 @@ namespace IdentityServer4.Admin.Controllers.API
                          u.UserName.Contains(input.Q) ||
                          u.PhoneNumber.Contains(input.Q) ||
                          // Comment: 如果不拼接成字符串报空引用错, Lewis Zou, 2018-12-10
+                         $"{u.LastName}{u.FirstName}".Contains(input.Q) ||
                          $"{u.FirstName}{u.LastName}".Contains(input.Q)
                 );
             }

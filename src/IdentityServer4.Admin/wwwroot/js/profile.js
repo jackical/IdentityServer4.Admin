@@ -68,17 +68,17 @@ $(function () {
                     this.errors.push("公司电话不正确");
                 }
                 if (!app.requireCheck(this.el.firstName)) {
-                    this.errors.push("姓 不能为空");
+                    this.errors.push("名 不能为空");
                 } else {
                     if (!app.rangeCheck(this.el.firstName.length, 1, 50)) {
-                        this.errors.push("姓 长度范围为 1-50");
+                        this.errors.push("名 长度范围为 1-50");
                     }
                 }
                 if (!app.requireCheck(this.el.lastName)) {
-                    this.errors.push("名 不能为空");
+                    this.errors.push("姓 不能为空");
                 } else {
                     if (!app.rangeCheck(this.el.lastName.length, 1, 50)) {
-                        this.errors.push("名 长度范围为 1-50");
+                        this.errors.push("姓 长度范围为 1-50");
                     }
                 }
                 return !this.errors.length
