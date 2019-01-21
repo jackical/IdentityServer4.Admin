@@ -42,6 +42,7 @@ namespace IdentityServer4.Admin.Infrastructure
             {
                 throw new ArgumentException("User not exits");
             }
+
             var claims = new HashSet<string>();
             foreach (var resource in context.RequestedResources.IdentityResources)
             {
@@ -119,7 +120,7 @@ namespace IdentityServer4.Admin.Infrastructure
                     }
                     case "full_name":
                     {
-                        context.IssuedClaims.Add(new Claim("full_name", user.FirstName ?? "" + user.LastName ?? ""));
+                        context.IssuedClaims.Add(new Claim("full_name", string.Concat(user.LastName, user.FirstName)));
                         continue;
                     }
                     case "title":
