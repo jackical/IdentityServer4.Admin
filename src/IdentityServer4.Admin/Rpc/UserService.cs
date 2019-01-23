@@ -90,7 +90,8 @@ namespace IdentityServer4.Admin.Rpc
                     u.Group,
                     u.Level,
                     u.UserName,
-                    u.CreationTime
+                    u.CreationTime,
+                    u.IsDeleted
                 }).ToListAsync();
             rsp.Data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(users));
             return rsp;
@@ -164,7 +165,8 @@ namespace IdentityServer4.Admin.Rpc
                         u.OfficePhone,
                         u.Group,
                         u.Level,
-                        u.UserName
+                        u.UserName,
+                        u.IsDeleted
                     }).ToList()
                 };
                 rsp.Data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(result));
@@ -188,7 +190,8 @@ namespace IdentityServer4.Admin.Rpc
                                 Level = u.Level,
                                 RoleId = ur.RoleId,
                                 UserName = u.UserName,
-                                CreationTime = u.CreationTime
+                                CreationTime = u.CreationTime,
+                                IsDeleted = u.IsDeleted
                             }).Where(t =>
                         roleIds.Contains(t.RoleId) &&
                         (string.IsNullOrWhiteSpace(dto.Q) || t.Name.Contains(dto.Q) || t.Email.Contains(dto.Q) ||
@@ -211,7 +214,8 @@ namespace IdentityServer4.Admin.Rpc
                         r.OfficePhone,
                         r.Group,
                         r.Level,
-                        r.UserName
+                        r.UserName,
+                        r.IsDeleted
                     })
                 };
                 rsp.Data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(output));
@@ -233,6 +237,8 @@ namespace IdentityServer4.Admin.Rpc
             public Guid RoleId { get; set; }
             public string UserName { get; set; }
             public DateTime CreationTime { get; set; }
+
+            public bool IsDeleted { get; set; }
 
             public bool Equals(TmpUser x, TmpUser y)
             {

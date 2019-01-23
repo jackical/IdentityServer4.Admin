@@ -28,8 +28,7 @@ $(function () {
 
                 if (!app.requireCheck(this.el.name)) {
                     this.errors.push("角色名不能为空");
-                }
-                else {
+                } else {
                     if (!app.rangeCheck(this.el.name.length, 4, 30)) {
                         this.errors.push("角色名长度范围为 4-30");
                     }
@@ -44,7 +43,7 @@ $(function () {
             },
             update: function () {
                 if (this.checkRole()) {
-                    app.put("/api/role/" + app.getPathPart(window.location.href, 1), this.$data, function () {
+                    app.put("/api/role/" + app.getPathPart(window.location.href, 1), this.$data.el, function () {
                         swal({
                             title: "更新成功",
                             type: "success",

@@ -44,7 +44,7 @@ $(function () {
             },
             update: function () {
                 if (this.checkPermission()) {
-                    app.put("/api/permission/" + app.getPathPart(window.location.href, 1), this.$data, function () {
+                    app.put("/api/permission/" + app.getPathPart(window.location.href, 1), this.$data.el, function () {
                         swal({
                             title: "更新成功",
                             type: "success",
