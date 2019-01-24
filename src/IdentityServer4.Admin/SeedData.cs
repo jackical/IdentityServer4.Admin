@@ -288,8 +288,7 @@ namespace IdentityServer4.Admin
         {
             return new List<ApiResource>
             {
-                new ApiResource("expert-api", "专家系统"),
-                new ApiResource("email-proxy-api", "邮件系统")
+                new ApiResource("western-research-api", "western-research-api")
             };
         }
 
@@ -332,8 +331,8 @@ namespace IdentityServer4.Admin
             {
                 new Client
                 {
-                    ClientId = "vue-expert",
-                    ClientName = "专家系统",
+                    ClientId = "western-research",
+                    ClientName = "western-research",
                     AllowedGrantTypes = GrantTypes.Implicit,
                     AllowAccessTokensViaBrowser = true,
                     AllowedCorsOrigins = {"http://localhost:6568"},
@@ -346,27 +345,7 @@ namespace IdentityServer4.Admin
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         "full_profile",
-                        "expert-api",
-                        "email-proxy-api"
-                    }
-                },
-                new Client
-                {
-                    ClientId = "email-proxy",
-                    ClientName = "邮件系统",
-                    AllowedGrantTypes = GrantTypes.Implicit,
-                    AllowAccessTokensViaBrowser = true,
-                    AllowedCorsOrigins = {"http://localhost:6570"},
-                    RedirectUris = {"http://localhost:6570/signin-oidc.html"},
-                    PostLogoutRedirectUris = {"http://localhost:6570"},
-                    RequireConsent = true,
-                    AllowOfflineAccess = false,
-                    AccessTokenLifetime = 3600 * 24 * 7,
-                    AllowedScopes =
-                    {
-                        IdentityServerConstants.StandardScopes.OpenId,
-                        "full_profile",
-                        "email-proxy-api"
+                        "western-research-api"
                     }
                 }
             };
