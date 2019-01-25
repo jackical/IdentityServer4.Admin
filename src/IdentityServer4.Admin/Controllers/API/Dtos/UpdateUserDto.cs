@@ -15,7 +15,6 @@ namespace IdentityServer4.Admin.Controllers.API.Dtos
         [Required]
         public string Email { get; set; }
         
-        [Required]
         [Phone]
         [StringLength(50)]
         public string PhoneNumber { get; set; }

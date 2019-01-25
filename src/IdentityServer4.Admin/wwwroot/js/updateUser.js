@@ -70,12 +70,6 @@ $(function () {
                 if (!app.emailCheck(this.el.email)) {
                     this.errors.push("邮箱地址不正确");
                 }
-                if (!app.mobileCheck(this.el.phoneNumber)) {
-                    this.errors.push("手机号码不正确");
-                }
-                if (!app.phoneCheck(this.el.officePhone)) {
-                    this.errors.push("公司电话不正确");
-                }
                 if (!app.requireCheck(this.el.firstName)) {
                     this.errors.push("名 不能为空");
                 } else {

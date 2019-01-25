@@ -78,12 +78,6 @@ $(function () {
                 if (!app.rangeCheck(this.el.password.length, 6, 24)) {
                     this.errors.push("密码长度范围为 6-24");
                 }
-                if (!app.mobileCheck(this.el.phoneNumber)) {
-                    this.errors.push("手机号码不正确");
-                }
-                if (!app.phoneCheck(this.el.officePhone)) {
-                    this.errors.push("公司电话不正确");
-                }
                 if (!app.requireCheck(this.el.firstName)) {
                     this.errors.push("名 不能为空");
                 }
