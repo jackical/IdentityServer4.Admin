@@ -199,7 +199,8 @@ namespace IdentityServer4.Admin
                 var sp = scope.ServiceProvider;
                 SeedData.AddIdentityResources(sp).Wait();
                 SeedData.EnsureData(sp).Wait();
-                if (env.IsDevelopment() && _configuration["seed"] == "true")
+
+                if (env.IsDevelopment() || _configuration["seed"] == "true")
                 {
                     SeedData.EnsureTestData(sp).Wait();
                 }

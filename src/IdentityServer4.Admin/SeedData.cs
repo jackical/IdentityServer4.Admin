@@ -36,7 +36,6 @@ namespace IdentityServer4.Admin
             var dbContext = (AdminDbContext) serviceProvider.GetRequiredService<IDbContext>();
             if (await dbContext.Users.CountAsync() <= 1)
             {
-                await AddPermissions(serviceProvider);
                 await AddRoles(serviceProvider);
                 await AddUsers(serviceProvider);
             }
@@ -45,16 +44,6 @@ namespace IdentityServer4.Admin
 
             Console.WriteLine("Done seeding database.");
             Console.WriteLine();
-        }
-
-        private static async Task AddPermissions(IServiceProvider serviceProvider)
-        {
-            var context = (AdminDbContext) serviceProvider.GetRequiredService<IDbContext>();
-
-            var permission = new Permission
-                {Name = AdminConsts.AdminName, Description = "Super admin permission"};
-            await context.Permissions.AddAsync(permission);
-            await CommitAsync(serviceProvider);
         }
 
         private static async Task CommitAsync(IServiceProvider serviceProvider)
