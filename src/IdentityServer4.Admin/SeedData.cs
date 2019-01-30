@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using ApiResource = IdentityServer4.Models.ApiResource;
 using Client = IdentityServer4.Models.Client;
 using GrantTypes = IdentityServer4.Models.GrantTypes;
@@ -73,7 +74,7 @@ namespace IdentityServer4.Admin
             var context = (AdminDbContext) serviceProvider.GetRequiredService<IDbContext>();
             if (!await context.IdentityResources.AnyAsync())
             {
-                Console.WriteLine("IdentityResources being populated");
+                Log.Logger.Information("IdentityResources being populated");
 
                 foreach (var resource in GetIdentityResources().ToList())
                 {

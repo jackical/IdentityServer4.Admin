@@ -2,13 +2,9 @@
 using System.IO;
 using System.Reflection;
 using AutoMapper;
-using DotBPE.Protocol.Amp;
-using DotBPE.Rpc;
-using DotBPE.Rpc.Hosting;
 using IdentityServer4.Admin.Controllers.API.Dtos;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
-using IdentityServer4.Admin.Rpc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace IdentityServer4.Admin
@@ -26,19 +23,21 @@ namespace IdentityServer4.Admin
     {
         private readonly IConfiguration _configuration;
         private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly AdminOptions _options;
 
         public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             _configuration = configuration;
             _hostingEnvironment = env;
+            _options = new AdminOptions(_configuration);
+            Log.Logger.Information("Configuration: " + _options.Version);
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var adminOptions = new AdminOptions(_configuration);
             // Add configuration
-            services.AddSingleton(adminOptions);
+            services.AddSingleton(_options);
 
             // Add MVC
             services.AddMvc()
@@ -85,11 +84,11 @@ namespace IdentityServer4.Admin
             // Add aspnetcore identity
             IdentityBuilder idBuilder = services.AddIdentity<User, Role>(options =>
             {
-                options.Password.RequireUppercase = adminOptions.RequireUppercase;
-                options.Password.RequireNonAlphanumeric = adminOptions.RequireNonAlphanumeric;
-                options.Password.RequireDigit = adminOptions.RequireDigit;
-                options.Password.RequiredLength = adminOptions.RequiredLength;
-                options.User.RequireUniqueEmail = adminOptions.RequireUniqueEmail;
+                options.Password.RequireUppercase = _options.RequireUppercase;
+                options.Password.RequireNonAlphanumeric = _options.RequireNonAlphanumeric;
+                options.Password.RequireDigit = _options.RequireDigit;
+                options.Password.RequiredLength = _options.RequiredLength;
+                options.User.RequireUniqueEmail = _options.RequireUniqueEmail;
             }).AddErrorDescriber<CustomIdentityErrorDescriber>();
 
             idBuilder.AddDefaultTokenProviders();
@@ -117,42 +116,12 @@ namespace IdentityServer4.Admin
                 {
                     options.ResolveDbContextOptions = (provider, b) => dbContextOptionsBuilder(b);
                     // this enables automatic token cleanup. this is optional.
-                    options.EnableTokenCleanup = adminOptions.EnableTokenCleanup;
+                    options.EnableTokenCleanup = _options.EnableTokenCleanup;
                 });
             builder.AddProfileService<ProfileService>();
 
             // Configure AutoMapper
             ConfigureAutoMapper();
-
-            AddRpc(services);
-        }
-
-        private void AddRpc(IServiceCollection services)
-        {
-            //添加协议支持
-            services.AddDotBPE();
-            //注册服务
-            services.AddServiceActors<AmpMessage>(actors =>
-            {
-                actors.Add<UserService>();
-                actors.Add<PermissionService>();
-            });
-
-            //添加挂载的宿主服务
-            services.AddSingleton<IHostedService, RpcHostedService>();
-        }
-
-        private void ConfigureAutoMapper()
-        {
-            Mapper.Initialize(cfg =>
-            {
-                cfg.CreateMap<CreateUserDto, User>();
-                cfg.CreateMap<Permission, PermissionDto>();
-                cfg.CreateMap<PermissionDto, Permission>();
-                cfg.CreateMap<Role, RoleDto>();
-                cfg.CreateMap<RoleDto, Role>();
-                cfg.CreateMap<User, UserOutputDto>();
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -184,27 +153,32 @@ namespace IdentityServer4.Admin
         {
             using (IServiceScope scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                var sp = scope.ServiceProvider;
-                var logger = sp.GetRequiredService<ILogger<Startup>>();
-                var options = sp.GetRequiredService<AdminOptions>();
-                logger.LogInformation("Configuration: " + options.Version);
-                if (sp.GetRequiredService<AdminDbContext>().Database.EnsureCreated())
+                if (scope.ServiceProvider.GetRequiredService<AdminDbContext>().Database.EnsureCreated())
                 {
-                    logger.LogInformation("Created database success");
+                    Log.Logger.Information("Created database success");
                 }
-            }
-
-            using (IServiceScope scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var sp = scope.ServiceProvider;
-                SeedData.AddIdentityResources(sp).Wait();
-                SeedData.EnsureData(sp).Wait();
+                
+                SeedData.AddIdentityResources(scope.ServiceProvider).Wait();
+                SeedData.EnsureData(scope.ServiceProvider).Wait();
 
                 if (env.IsDevelopment() || _configuration["seed"] == "true")
                 {
-                    SeedData.EnsureTestData(sp).Wait();
+                    SeedData.EnsureTestData(scope.ServiceProvider).Wait();
                 }
             }
+        }
+
+        private void ConfigureAutoMapper()
+        {
+            Mapper.Initialize(cfg =>
+            {
+                cfg.CreateMap<CreateUserDto, User>();
+                cfg.CreateMap<Permission, PermissionDto>();
+                cfg.CreateMap<PermissionDto, Permission>();
+                cfg.CreateMap<Role, RoleDto>();
+                cfg.CreateMap<RoleDto, Role>();
+                cfg.CreateMap<User, UserOutputDto>();
+            });
         }
     }
 }
