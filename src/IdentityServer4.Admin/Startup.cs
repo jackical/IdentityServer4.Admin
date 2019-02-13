@@ -2,13 +2,9 @@
 using System.IO;
 using System.Reflection;
 using AutoMapper;
-using DotBPE.Protocol.Amp;
-using DotBPE.Rpc;
-using DotBPE.Rpc.Hosting;
 using IdentityServer4.Admin.Controllers.API.Dtos;
 using IdentityServer4.Admin.Entities;
 using IdentityServer4.Admin.Infrastructure;
-using IdentityServer4.Admin.Rpc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -123,23 +119,6 @@ namespace IdentityServer4.Admin
 
             // Configure AutoMapper
             ConfigureAutoMapper();
-
-            AddRpc(services);
-        }
-
-        private void AddRpc(IServiceCollection services)
-        {
-            //添加协议支持
-            services.AddDotBPE();
-            //注册服务
-            services.AddServiceActors<AmpMessage>(actors =>
-            {
-                actors.Add<UserService>();
-                actors.Add<PermissionService>();
-            });
-
-            //添加挂载的宿主服务
-            services.AddSingleton<IHostedService, RpcHostedService>();
         }
 
         private void ConfigureAutoMapper()
